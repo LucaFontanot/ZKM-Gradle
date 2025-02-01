@@ -33,7 +33,7 @@ jobs:
         run: |-
           chmod +x gradlew
           ./gradlew shadowJar
-          echo VARIABLES="build.gradle.kts settings.gradle.kts include build/libs/ (?<=version\s=\s(\"|'))([0-9.]+(-SNAPSHOT)?) (?<=include\s(\"|'))([^\"']+)" >> $GITHUB_OUTPUT
+          echo VARIABLES="build.gradle settings.gradle include build/libs/ (?<=version\s=\s(\"|'))([0-9.]+(-SNAPSHOT)?) (?<=include\s(\"|'))([^\"']+)" >> $GITHUB_OUTPUT
         shell: bash
       # Obtain the Project version and modules
       - name: Gather Project Info
