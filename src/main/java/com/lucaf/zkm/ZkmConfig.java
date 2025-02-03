@@ -13,10 +13,37 @@ public class ZkmConfig {
     public String inputJar = "";
     public String outputJar = "";
     public List<String> obfuscatePackages = new ArrayList<>();
+
+    //Global Settings
     public List<String> exclude = new ArrayList<>();
+    public List<String> unexclude = new ArrayList<>();
     public List<String> classPath = new ArrayList<>();
-
-
+    public List<String> ignoreMissingReferences = new ArrayList<>();
+    public List<String> trimExclude = new ArrayList<>();
+    public List<String> trimUnexclude = new ArrayList<>();
+    public List<String> removeMethodCallsInclude = new ArrayList<>();
+    public List<String> removeMethodCallsExclude = new ArrayList<>();
+    public List<String> obfuscateFlowExclude = new ArrayList<>();
+    public List<String> obfuscateFlowUnexclude = new ArrayList<>();
+    public List<String> obfuscateExceptionsExclude = new ArrayList<>();
+    public List<String> obfuscateExceptionsUnexclude = new ArrayList<>();
+    public List<String> stringEncryptionExclude = new ArrayList<>();
+    public List<String> stringEncryptionUnexclude = new ArrayList<>();
+    public List<String> integerEncryptionExclude = new ArrayList<>();
+    public List<String> integerEncryptionUnexclude = new ArrayList<>();
+    public List<String> longEncryptionExclude = new ArrayList<>();
+    public List<String> longEncryptionUnexclude = new ArrayList<>();
+    public List<String> groupings = new ArrayList<>();
+    public List<String> existingSerializedClasses = new ArrayList<>();
+    public List<List<String>> classInitializationOrder = new ArrayList<>();
+    public List<String> accessedByReflection = new ArrayList<>();
+    public List<String> accessedByReflectionExclude = new ArrayList<>();
+    public List<String> obfuscateReferencesInclude = new ArrayList<>();
+    public List<String> obfuscateReferencesExclude = new ArrayList<>();
+    public List<String> methodParameterChangesInclude = new ArrayList<>();
+    public List<String> methodParameterChangesExclude = new ArrayList<>();
+    public List<String> methodParameterObfuscationInclude = new ArrayList<>();
+    public List<String> methodParameterObfuscationExclude = new ArrayList<>();
     //Obfuscation settings
     public String changeLogFileIn = "";
     public String changeLogFileOut = "";

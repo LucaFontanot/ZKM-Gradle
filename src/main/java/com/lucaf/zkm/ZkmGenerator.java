@@ -12,11 +12,11 @@ import java.util.List;
 public class ZkmGenerator {
     ObjectMapper mapper = new ObjectMapper();
     HashMap<String, String> obfuscationMap = new HashMap<>();
-    List<String> exclude = new ArrayList<>();
     List<String> classPaths = new ArrayList<>();
     String open;
     String save;
 
+    final ZkmConfig config;
 
     @Getter
     List<String> blackListedFolders = new ArrayList<>();
@@ -35,8 +35,8 @@ public class ZkmGenerator {
     }
 
     public ZkmGenerator(ZkmConfig config) {
+        this.config = config;
         try {
-            exclude.addAll(config.getExclude());
             classPaths.addAll(config.getClassPath());
 
             open = mapper.writeValueAsString(config.getInputJar());
@@ -104,7 +104,7 @@ public class ZkmGenerator {
         return builder.toString();
     }
 
-    static final List<String> parsedParameters = Arrays.asList("newNamesPrefix", "assumeRuntimeVersion");
+    static final List<String> parsedParameters = Arrays.asList("newNamesPrefix", "assumeRuntimeVersion","changeLogFileIn","looseChangeLogFileIn","changeLogFileOut","obfuscateReferencesPackage","autoReflectionPackage","autoReflectionHash","collapsePackagesWithDefault","newPackageNameFile","newClassNameFile","newFieldNameFile","newMethodNameFile","methodParameterChangesPackage");
 
     public String mapToString(HashMap<String, String> map) throws JsonProcessingException {
         StringBuilder builder = new StringBuilder();
@@ -126,8 +126,93 @@ public class ZkmGenerator {
         StringBuilder config = new StringBuilder();
         config.append("classpath ").append(arrayToString(classPaths)).append(";\n");
         config.append("open ").append(open).append(";\n");
-        for (String s : exclude) {
+        for (String s : this.config.getExclude()) {
             config.append("exclude ").append(s).append(";\n");
+        }
+        for (String s : this.config.getUnexclude()) {
+            config.append("unexclude ").append(s).append(";\n");
+        }
+        for (String s : this.config.getIgnoreMissingReferences()) {
+            config.append("ignoreMissingReferences ").append(s).append(";\n");
+        }
+        for (String s : this.config.getTrimExclude()) {
+            config.append("trimExclude ").append(s).append(";\n");
+        }
+        for (String s : this.config.getTrimUnexclude()) {
+            config.append("trimUnexclude ").append(s).append(";\n");
+        }
+        for (String s : this.config.getRemoveMethodCallsInclude()) {
+            config.append("removeMethodCallsInclude ").append(s).append(";\n");
+        }
+        for (String s : this.config.getRemoveMethodCallsExclude()) {
+            config.append("removeMethodCallsExclude ").append(s).append(";\n");
+        }
+        for (String s : this.config.getObfuscateFlowExclude()) {
+            config.append("obfuscateFlowExclude ").append(s).append(";\n");
+        }
+        for (String s : this.config.getObfuscateFlowUnexclude()) {
+            config.append("obfuscateFlowUnexclude ").append(s).append(";\n");
+        }
+        for (String s : this.config.getObfuscateExceptionsExclude()) {
+            config.append("obfuscateExceptionsExclude ").append(s).append(";\n");
+        }
+        for (String s : this.config.getObfuscateExceptionsUnexclude()) {
+            config.append("obfuscateExceptionsUnexclude ").append(s).append(";\n");
+        }
+        for (String s : this.config.getStringEncryptionExclude()) {
+            config.append("stringEncryptionExclude ").append(s).append(";\n");
+        }
+        for (String s : this.config.getStringEncryptionUnexclude()) {
+            config.append("stringEncryptionUnexclude ").append(s).append(";\n");
+        }
+        for (String s : this.config.getIntegerEncryptionExclude()) {
+            config.append("integerEncryptionExclude ").append(s).append(";\n");
+        }
+        for (String s : this.config.getIntegerEncryptionUnexclude()) {
+            config.append("integerEncryptionUnexclude ").append(s).append(";\n");
+        }
+        for (String s : this.config.getLongEncryptionExclude()) {
+            config.append("longEncryptionExclude ").append(s).append(";\n");
+        }
+        for (String s : this.config.getLongEncryptionUnexclude()) {
+            config.append("longEncryptionUnexclude ").append(s).append(";\n");
+        }
+        for (String s : this.config.getGroupings()) {
+            config.append("groupings {").append(s).append("};\n");
+        }
+        for (String s : this.config.getExistingSerializedClasses()) {
+            config.append("existingSerializedClasses ").append(s).append(";\n");
+        }
+        if (!this.config.getClassInitializationOrder().isEmpty()) {
+            List<String> tmpConditions = new ArrayList<>();
+            for (List<String> s : this.config.getClassInitializationOrder()) {
+                tmpConditions.add(s.get(0) + " > " + s.get(1));
+            }
+            config.append("classInitializationOrder ").append(String.join(" and ", tmpConditions)).append(";\n");
+        }
+        for (String s : this.config.getAccessedByReflection()) {
+            config.append("accessedByReflection ").append(s).append(";\n");
+        }
+        for (String s : this.config.getAccessedByReflectionExclude()) {
+            config.append("accessedByReflectionExclude ").append(s).append(";\n");
+        }
+        for (String s : this.config.getObfuscateReferencesInclude()) {
+            config.append("obfuscateReferencesInclude ").append(s).append(";\n");
+        }
+        for (String s : this.config.getObfuscateReferencesExclude()) {
+            config.append("obfuscateReferencesExclude ").append(s).append(";\n");
+        }
+        for (String s : this.config.getMethodParameterChangesInclude()) {
+            config.append("methodParameterChangesInclude ").append(s).append(";\n");
+        }
+        for (String s : this.config.getMethodParameterChangesExclude()) {
+            config.append("methodParameterChangesExclude ").append(s).append(";\n");
+        }
+        for (String s : this.config.getMethodParameterObfuscationInclude()) {
+            config.append("methodParameterObfuscationInclude ").append(s).append(";\n");
+        }
+        for (String s : this.config.getMethodParameterObfuscationExclude()) {
+            config.append("methodParameterObfuscationExclude ").append(s).append(";\n");
         }
         config.append("obfuscate ").append(mapToString(obfuscationMap)).append(";\n");
         config.append("saveAll ").append(save).append(";\n");
