@@ -86,4 +86,5 @@ public class ZkmConfig {
     public String assumeRuntimeVersion = "1.8";
     public boolean hideFieldNames = true;
     public boolean hideStaticMethodNames = true;
+    public boolean autoReflectionHandling = true;
 }

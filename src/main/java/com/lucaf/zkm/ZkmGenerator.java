@@ -87,6 +87,7 @@ public class ZkmGenerator {
             obfuscationMap.put("assumeRuntimeVersion", config.getAssumeRuntimeVersion());
             obfuscationMap.put("hideFieldNames", String.valueOf(config.isHideFieldNames()));
             obfuscationMap.put("hideStaticMethodNames", String.valueOf(config.isHideStaticMethodNames()));
+            obfuscationMap.put("autoReflectionHandling", String.valueOf(config.isAutoReflectionHandling()));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
