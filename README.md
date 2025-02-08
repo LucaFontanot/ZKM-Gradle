@@ -28,6 +28,10 @@ apply plugin: "com.lucaf.zkm"
 
 The plugin will automatically generate the classpath for the ZKM obfuscator, you can also add your own classpath.
 
+The collectAllClasspath setting does the following:
+- If set to true, the plugin will collect all the gradle downloaded dependencies and add them to the classpath.
+- If set to false, the plugin will only add the dependencies that are used in the project.
+
 ## Create the configuration
 
 You can create a ZKM block in your build.gradle file to configure the plugin:
@@ -39,7 +43,7 @@ zkm {
     inputJar = "${project.buildDir}/libs/${project.name}-${project.version}-all.jar" // Path to the input jar file
     outputJar = "${project.buildDir}/libs/${project.name}-${project.version}-obf.jar" // Path to the output jar file
     obfuscatePackages = ["com.app.example"] // List of packages to obfuscate, this will be applied as a filter in the open statement
-
+    collectAllClasspath = false
     //ZKM exclusions configuration
     exclude = [ //List of exclusions as of the ZKM documentation
         "@*.Table *.*^ *", 
