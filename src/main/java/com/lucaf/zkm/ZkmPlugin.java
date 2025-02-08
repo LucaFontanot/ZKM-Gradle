@@ -25,7 +25,7 @@ public class ZkmPlugin implements Plugin<Project> {
         target.getTasks().create("zkmObuscate", task -> {
             task.doLast(t -> {
                 ZkmGenerator generator = new ZkmGenerator(config);
-                Set<File> classPath = getClassPath(target);
+                Set<File> classPath = getClassPath(target, config.collectAllClasspath);
                 classPath.forEach(file -> generator.addClassPath(file.getAbsolutePath()));
                 generator.addClassPath(config.getInputJar());
                 try {
@@ -113,15 +113,17 @@ public class ZkmPlugin implements Plugin<Project> {
         });
     }
 
-    public Set<File> getClassPath(Project p) {
+    public Set<File> getClassPath(Project p, boolean all) {
         Set<File> deps = p.getConfigurations().getByName("compileClasspath")
                 .getResolvedConfiguration()
                 .getResolvedArtifacts()
                 .stream()
                 .map(artifact -> artifact.getFile())
                 .collect(Collectors.toSet());
-        File localFolder = Paths.get(System.getProperty("user.home") + "/.gradle/caches/modules-2/files-2.1").toFile();
-        scanFolderForJar(localFolder, deps);
+        if (all){
+            File localFolder = Paths.get(System.getProperty("user.home") + "/.gradle/caches/modules-2/files-2.1").toFile();
+            scanFolderForJar(localFolder, deps);
+        }
         return deps;
     }
 }

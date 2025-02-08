@@ -12,6 +12,7 @@ public class ZkmConfig {
     public String zkmPath = "";
     public String inputJar = "";
     public String outputJar = "";
+    public boolean collectAllClasspath = false;
     public List<String> obfuscatePackages = new ArrayList<>();
 
     //Global Settings
