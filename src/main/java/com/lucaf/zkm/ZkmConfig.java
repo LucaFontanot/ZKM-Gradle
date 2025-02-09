@@ -14,6 +14,7 @@ public class ZkmConfig {
     public String outputJar = "";
     public boolean collectAllClasspath = false;
     public List<String> obfuscatePackages = new ArrayList<>();
+    public int iterations = 1;
 
     //Global Settings
     public List<String> exclude = new ArrayList<>();

@@ -215,7 +215,12 @@ public class ZkmGenerator {
         for (String s : this.config.getMethodParameterObfuscationExclude()) {
             config.append("methodParameterObfuscationExclude ").append(s).append(";\n");
         }
-        config.append("obfuscate ").append(mapToString(obfuscationMap)).append(";\n");
+        for (int i = 0;i < this.config.getIterations();i++) {
+            if (i>=1){
+                this.config.setAutoReflectionHandling("none");
+            }
+            config.append("obfuscate ").append(mapToString(obfuscationMap)).append(";\n");
+        }
         config.append("saveAll ").append(save).append(";\n");
         return config.toString();
     }
