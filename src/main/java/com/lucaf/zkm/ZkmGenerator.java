@@ -78,7 +78,9 @@ public class ZkmGenerator {
             obfuscationMap.put("methodParameterChanges", config.getMethodParameterChanges());
             obfuscationMap.put("methodParameterChangesPackage", config.getMethodParameterChangesPackage());
             obfuscationMap.put("obfuscateParameters", config.getObfuscateParameters());
-            obfuscationMap.put("makeClassesPublic", String.valueOf(config.isMakeClassesPublic()));
+            if (config.version >= 22) {
+                obfuscationMap.put("makeClassesPublic", String.valueOf(config.isMakeClassesPublic()));
+            }
             obfuscationMap.put("allClassesOpened", String.valueOf(config.isAllClassesOpened()));
             obfuscationMap.put("deriveGroupingsFromInputChangeLog", String.valueOf(config.isDeriveGroupingsFromInputChangeLog()));
             obfuscationMap.put("keepBalancedLocks", String.valueOf(config.isKeepBalancedLocks()));
@@ -154,11 +156,13 @@ public class ZkmGenerator {
         for (String s : this.config.getObfuscateFlowUnexclude()) {
             config.append("obfuscateFlowUnexclude ").append(s).append(";\n");
         }
-        for (String s : this.config.getObfuscateExceptionsExclude()) {
-            config.append("obfuscateExceptionsExclude ").append(s).append(";\n");
-        }
-        for (String s : this.config.getObfuscateExceptionsUnexclude()) {
-            config.append("obfuscateExceptionsUnexclude ").append(s).append(";\n");
+        if (this.config.version >= 23) {
+            for (String s : this.config.getObfuscateExceptionsExclude()) {
+                config.append("obfuscateExceptionsExclude ").append(s).append(";\n");
+            }
+            for (String s : this.config.getObfuscateExceptionsUnexclude()) {
+                config.append("obfuscateExceptionsUnexclude ").append(s).append(";\n");
+            }
         }
         for (String s : this.config.getStringEncryptionExclude()) {
             config.append("stringEncryptionExclude ").append(s).append(";\n");
