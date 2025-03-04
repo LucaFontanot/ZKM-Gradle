@@ -20,6 +20,7 @@ public class ZkmConfig {
     public List<String> exclude = new ArrayList<>();
     public List<String> unexclude = new ArrayList<>();
     public List<String> classPath = new ArrayList<>();
+    public List<String> classPathExclude = new ArrayList<>();
     public List<String> ignoreMissingReferences = new ArrayList<>();
     public List<String> trimExclude = new ArrayList<>();
     public List<String> trimUnexclude = new ArrayList<>();

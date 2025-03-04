@@ -127,6 +127,9 @@ public class ZkmGenerator {
 
     public String generateConfig() throws JsonProcessingException {
         StringBuilder config = new StringBuilder();
+        for (String c : this.config.getClassPathExclude()){
+            classPaths.removeIf(s -> s.contains(c));
+        }
         config.append("classpath ").append(arrayToString(classPaths)).append(";\n");
         config.append("open ").append(open).append(";\n");
         for (String s : this.config.getExclude()) {
