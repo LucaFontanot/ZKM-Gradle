@@ -131,15 +131,15 @@ public class ZkmGenerator {
             classPaths.removeIf(s -> s.contains(c));
         }
         config.append("classpath ").append(arrayToString(classPaths)).append(";\n");
+        for (String s : this.config.getIgnoreMissingReferences()) {
+            config.append("ignoreMissingReferences ").append(s).append(";\n");
+        }
         config.append("open ").append(open).append(";\n");
         for (String s : this.config.getExclude()) {
             config.append("exclude ").append(s).append(";\n");
         }
         for (String s : this.config.getUnexclude()) {
             config.append("unexclude ").append(s).append(";\n");
-        }
-        for (String s : this.config.getIgnoreMissingReferences()) {
-            config.append("ignoreMissingReferences ").append(s).append(";\n");
         }
         for (String s : this.config.getTrimExclude()) {
             config.append("trimExclude ").append(s).append(";\n");
