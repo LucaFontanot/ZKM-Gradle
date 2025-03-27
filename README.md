@@ -5,7 +5,7 @@
 Add before the plugins block in your build.gradle file:
 
 ```groovy
-    buildscript {
+buildscript {
     repositories {
         mavenLocal()
         maven {
@@ -17,11 +17,29 @@ Add before the plugins block in your build.gradle file:
     }
 }
 ```
+If you are using gradle kotlin:
+```kotlin
+buildscript {
+    repositories {
+        mavenLocal()
+        maven {
+            url = uri("https://jitpack.io")
+        }
+    }
+    dependencies {
+        classpath("com.github.LucaFontanot:ZKM-Gradle:<version>")
+    }
+}
+```
 
 Add after the plugin block, but before the dependencies block in your build.gradle file:
 
 ```groovy
 apply plugin: "com.lucaf.zkm"
+```
+If you are using gradle kotlin:
+```kotlin
+apply(plugin = "com.lucaf.zkm")
 ```
 
 ## Classpath generation
@@ -184,6 +202,20 @@ zkm {
 }
 ```
 
+If you are using kotlin just change the array syntax:
+```kotlin
+zkm {
+    ...
+    obfuscatePackages = listOf("com.app.example")
+    ...
+    exclude = listOf(
+        "@*.Table *.*^ *", 
+        ...
+    )
+}
+```
+
+
 ## Run the obfuscation on the shadowJar
 
 You can create a custom task that will run the obfuscation after the jar building:
@@ -191,6 +223,11 @@ Example:
 ```groovy
 task obfuscate() {
     dependsOn shadowJar, zkmObuscate
+}
+```
+```kotlin
+tasks.register("obfuscate") {
+    dependsOn("shadowJar", "zkmObfuscate")
 }
 ```
 Then you can run the task with:
