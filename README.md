@@ -61,6 +61,7 @@ zkm {
     inputJar = "${project.buildDir}/libs/${project.name}-${project.version}-all.jar" // Path to the input jar file
     outputJar = "${project.buildDir}/libs/${project.name}-${project.version}-obf.jar" // Path to the output jar file
     obfuscatePackages = ["com.app.example"] // List of packages to obfuscate, this will be applied as a filter in the open statement
+    obfuscatePackagesExclude = ["com.app.example.exclude"] // List of packages to exclude from the obfuscation
     collectAllClasspath = false
     version = 23 //your licensed ZKM major version
     //ZKM exclusions configuration
@@ -222,7 +223,7 @@ You can create a custom task that will run the obfuscation after the jar buildin
 Example:
 ```groovy
 task obfuscate() {
-    dependsOn shadowJar, zkmObuscate
+    dependsOn shadowJar, zkmObfuscate
 }
 ```
 ```kotlin

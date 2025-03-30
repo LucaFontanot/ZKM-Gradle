@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'com.lucaf.zkm'
-version = '1.10'
+version = '1.11'
 
 shadowJar {
     archiveClassifier.set(null)

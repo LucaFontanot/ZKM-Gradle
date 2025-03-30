@@ -20,10 +20,13 @@ public class ZkmGenerator {
 
     @Getter
     List<String> blackListedFolders = new ArrayList<>();
+    @Getter
+    List<String> whiteListedFolders = new ArrayList<>();
 
-    public String buildOpenFilters(List<String> packages) throws JsonProcessingException {
+    public String buildOpenFilters(List<String> packages, List<String> exclude) throws JsonProcessingException {
         blackListedFolders.clear();
         List<String> parsedPackages = new ArrayList<>();
+        List<String> parsedExclude = new ArrayList<>();
         for (String s : packages) {
             String base = s.replace(".", "/");
             parsedPackages.add(mapper.writeValueAsString(base + "/**/*.class"));
@@ -31,7 +34,21 @@ public class ZkmGenerator {
             blackListedFolders.add(base);
         }
 
-        return "{ " + String.join(" || ", parsedPackages) + " }";
+        for (String s : exclude) {
+            String base = s.replace(".", "/");
+            parsedExclude.add("!" + mapper.writeValueAsString(base + "/**/*.class"));
+            parsedExclude.add("!" + mapper.writeValueAsString(base + "/*.class"));
+            whiteListedFolders.add(base);
+        }
+        StringBuilder builder = new StringBuilder("{");
+        if (!parsedExclude.isEmpty()) {
+            builder.append(String.join(" && ", parsedExclude)).append(" && ");
+        }
+        if (!parsedPackages.isEmpty()) {
+            builder.append(String.join(" || ", parsedPackages));
+        }
+        builder.append("}");
+        return builder.toString();
     }
 
     public ZkmGenerator(ZkmConfig config) {
@@ -42,7 +59,7 @@ public class ZkmGenerator {
             open = mapper.writeValueAsString(config.getInputJar());
 
             if (!config.getObfuscatePackages().isEmpty()) {
-                open += " " + buildOpenFilters(config.getObfuscatePackages());
+                open += " " + buildOpenFilters(config.getObfuscatePackages(), config.getObfuscatePackagesExclude());
             }
             save = mapper.writeValueAsString(config.getOutputJar());
 

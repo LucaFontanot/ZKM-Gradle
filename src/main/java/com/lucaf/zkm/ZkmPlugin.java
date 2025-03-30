@@ -22,7 +22,7 @@ public class ZkmPlugin implements Plugin<Project> {
     @Override
     public void apply(Project target) {
         ZkmConfig config = target.getExtensions().create("zkm", ZkmConfig.class);
-        target.getTasks().create("zkmObuscate", task -> {
+        target.getTasks().create("zkmObfuscate", task -> {
             task.doLast(t -> {
                 ZkmGenerator generator = new ZkmGenerator(config);
                 Set<File> classPath = getClassPath(target, config.collectAllClasspath);
@@ -67,6 +67,7 @@ public class ZkmPlugin implements Plugin<Project> {
                         }
                     }
                     List<String> blackListedFolders = generator.getBlackListedFolders();
+                    List<String> whiteListedFolders = generator.getWhiteListedFolders();
                     Enumeration<? extends ZipEntry> originalEntries = original.entries();
                     while (originalEntries.hasMoreElements()) {
                         ZipEntry entry = originalEntries.nextElement();
@@ -76,7 +77,13 @@ public class ZkmPlugin implements Plugin<Project> {
                                 skip = true;
                             }
                         }
-                        if (!entry.isDirectory() && !skip && obfuscated.getEntry(entry.getName()) == null) {
+                        boolean force = false;
+                        for (String folder : whiteListedFolders) {
+                            if (entry.getName().startsWith(folder)) {
+                                force = true;
+                            }
+                        }
+                        if (!entry.isDirectory() && (!skip || force) && obfuscated.getEntry(entry.getName()) == null) {
                             try (InputStream entryStream = original.getInputStream(entry)) {
                                 outputJar.putNextEntry(new ZipEntry(entry.getName()));
                                 byte[] buffer = new byte[1024];
