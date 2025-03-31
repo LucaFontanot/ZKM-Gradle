@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
 
+import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -27,6 +29,11 @@ public class ZkmGenerator {
         blackListedFolders.clear();
         List<String> parsedPackages = new ArrayList<>();
         List<String> parsedExclude = new ArrayList<>();
+
+        Path openFile = new File(config.getInputJar()).toPath();
+        String filename = openFile.getFileName().toString();
+
+
         for (String s : packages) {
             String base = s.replace(".", "/");
             parsedPackages.add(mapper.writeValueAsString(base + "/**/*.class"));
@@ -36,18 +43,23 @@ public class ZkmGenerator {
 
         for (String s : exclude) {
             String base = s.replace(".", "/");
-            parsedExclude.add("!" + mapper.writeValueAsString(base + "/**/*.class"));
-            parsedExclude.add("!" + mapper.writeValueAsString(base + "/*.class"));
+            parsedExclude.add(mapper.writeValueAsString(filename+"!" + base + "/**/*.class"));
+            parsedExclude.add(mapper.writeValueAsString(filename+"!" + base + "/*.class"));
             whiteListedFolders.add(base);
         }
-        StringBuilder builder = new StringBuilder("{");
-        if (!parsedExclude.isEmpty()) {
-            builder.append(String.join(" && ", parsedExclude)).append(" && ");
-        }
+        StringBuilder builder = new StringBuilder();
+
+
         if (!parsedPackages.isEmpty()) {
+            builder.append("{");
             builder.append(String.join(" || ", parsedPackages));
+            builder.append("}");
         }
-        builder.append("}");
+        if (!parsedExclude.isEmpty()) {
+            for (String s : parsedExclude) {
+                builder.append(" -").append(s);
+            }
+        }
         return builder.toString();
     }
 
