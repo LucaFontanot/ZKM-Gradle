@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Set;
@@ -52,6 +53,7 @@ public class ZkmPlugin implements Plugin<Project> {
                     ZipOutputStream outputJar = new ZipOutputStream(new FileOutputStream(tempJar));
                     ZipFile obfuscated = new ZipFile(config.getOutputJar());
                     Enumeration<? extends ZipEntry> entries = obfuscated.entries();
+                    List<String> outputJarFiles = new ArrayList<>();
                     while (entries.hasMoreElements()) {
                         ZipEntry entry = entries.nextElement();
                         if (!entry.isDirectory()) {
@@ -63,6 +65,7 @@ public class ZkmPlugin implements Plugin<Project> {
                                     outputJar.write(buffer, 0, bytesRead);
                                 }
                                 outputJar.closeEntry();
+                                outputJarFiles.add(entry.getName());
                             }
                         }
                     }
@@ -83,7 +86,7 @@ public class ZkmPlugin implements Plugin<Project> {
                                 force = true;
                             }
                         }
-                        if (!entry.isDirectory() && (!skip || force) && obfuscated.getEntry(entry.getName()) == null) {
+                        if (!entry.isDirectory() && (!skip || force) && obfuscated.getEntry(entry.getName()) == null && !outputJarFiles.contains(entry.getName())) {
                             try (InputStream entryStream = original.getInputStream(entry)) {
                                 outputJar.putNextEntry(new ZipEntry(entry.getName()));
                                 byte[] buffer = new byte[1024];
@@ -92,6 +95,7 @@ public class ZkmPlugin implements Plugin<Project> {
                                     outputJar.write(buffer, 0, bytesRead);
                                 }
                                 outputJar.closeEntry();
+                                outputJarFiles.add(entry.getName());
                             }
                         }
                     }
