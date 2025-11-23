@@ -1,8 +1,13 @@
 package com.lucaf.zkm;
 
+import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.process.ExecOperations;
+import org.gradle.process.ExecResult;
+import org.gradle.process.ExecSpec;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -20,31 +25,46 @@ import java.util.zip.ZipOutputStream;
 
 public class ZkmPlugin implements Plugin<Project> {
 
+
+    private final ExecOperations execOperations;
+
+    @Inject
+    public ZkmPlugin(ExecOperations execOperations) {
+        this.execOperations = execOperations;
+    }
+
     @Override
     public void apply(Project target) {
         ZkmConfig config = target.getExtensions().create("zkm", ZkmConfig.class);
         target.getTasks().create("zkmObfuscate", task -> {
             task.doLast(t -> {
-                ZkmGenerator generator = new ZkmGenerator(config);
-                Set<File> classPath = getClassPath(target, config.collectAllClasspath);
-                classPath.forEach(file -> generator.addClassPath(file.getAbsolutePath()));
-                generator.addClassPath(config.getInputJar());
                 try {
+                    System.out.println("Starting ZKM obfuscation...");
+                    ZkmGenerator generator = new ZkmGenerator(config);
+                    Set<File> classPath = getClassPath(target, config.collectAllClasspath);
+                    classPath.forEach(file -> generator.addClassPath(file.getAbsolutePath()));
+                    generator.addClassPath(config.getInputJar());
                     Path output = Paths.get(target.getBuildDir().getAbsolutePath() + "/zkm");
                     if (!output.toFile().exists()) {
                         output.toFile().mkdirs();
                     }
                     String script = generator.generateConfig();
+                    System.out.println("Generated ZKM script");
                     File scriptFile = output.resolve("config.zkm").toFile();
                     Files.write(scriptFile.toPath(), script.getBytes());
-
-                    target.exec(execSpec -> {
-                        execSpec.setIgnoreExitValue(false);
-                        System.out.println("java -jar " + config.getZkmPath() + " " + scriptFile.getAbsolutePath().toString());
-                        execSpec.commandLine("java", "-jar", config.getZkmPath(), scriptFile.getAbsolutePath().toString());
+                    System.out.println("Starting execution of ZKM...");
+                    ExecResult result = execOperations.exec(new Action<ExecSpec>() {
+                        @Override
+                        public void execute(ExecSpec execSpec) {
+                            System.out.println("Executing: java -jar " + config.getZkmPath() + " " + scriptFile.getAbsolutePath());
+                            execSpec.setIgnoreExitValue(false);
+                            execSpec.commandLine("java", "-jar", config.getZkmPath(), scriptFile.getAbsolutePath());
+                        }
                     });
-
-
+                    if (result.getExitValue() != 0) {
+                        throw new RuntimeException("ZKM obfuscation failed with exit code: " + result.getExitValue());
+                    }
+                    System.out.println("ZKM obfuscation completed.");
                     File tempJar = output.resolve("temp.jar").toFile();
                     if (tempJar.exists()) {
                         tempJar.delete();
@@ -78,12 +98,14 @@ public class ZkmPlugin implements Plugin<Project> {
                         for (String folder : blackListedFolders) {
                             if (entry.getName().startsWith(folder)) {
                                 skip = true;
+                                break;
                             }
                         }
                         boolean force = false;
                         for (String folder : whiteListedFolders) {
                             if (entry.getName().startsWith(folder)) {
                                 force = true;
+                                break;
                             }
                         }
                         if (!entry.isDirectory() && (!skip || force) && obfuscated.getEntry(entry.getName()) == null && !outputJarFiles.contains(entry.getName())) {
@@ -107,6 +129,7 @@ public class ZkmPlugin implements Plugin<Project> {
                         tempJar.renameTo(obfuscatedFile);
                     }
                 } catch (Exception e) {
+                    System.err.println("Error during ZKM obfuscation: " + e.getMessage());
                     throw new RuntimeException(e);
                 }
             });
@@ -131,7 +154,7 @@ public class ZkmPlugin implements Plugin<Project> {
                 .stream()
                 .map(artifact -> artifact.getFile())
                 .collect(Collectors.toSet());
-        if (all){
+        if (all) {
             File localFolder = Paths.get(System.getProperty("user.home") + "/.gradle/caches/modules-2/files-2.1").toFile();
             scanFolderForJar(localFolder, deps);
         }

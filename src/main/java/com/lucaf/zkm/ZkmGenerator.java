@@ -43,8 +43,8 @@ public class ZkmGenerator {
 
         for (String s : exclude) {
             String base = s.replace(".", "/");
-            parsedExclude.add(mapper.writeValueAsString(filename+"!" + base + "/**/*.class"));
-            parsedExclude.add(mapper.writeValueAsString(filename+"!" + base + "/*.class"));
+            parsedExclude.add(mapper.writeValueAsString(filename + "!" + base + "/**/*.class"));
+            parsedExclude.add(mapper.writeValueAsString(filename + "!" + base + "/*.class"));
             whiteListedFolders.add(base);
         }
         StringBuilder builder = new StringBuilder();
@@ -136,7 +136,7 @@ public class ZkmGenerator {
         return builder.toString();
     }
 
-    static final List<String> parsedParameters = Arrays.asList("newNamesPrefix", "assumeRuntimeVersion","changeLogFileIn","looseChangeLogFileIn","changeLogFileOut","obfuscateReferencesPackage","autoReflectionPackage","autoReflectionHash","collapsePackagesWithDefault","newPackageNameFile","newClassNameFile","newFieldNameFile","newMethodNameFile","methodParameterChangesPackage");
+    static final List<String> parsedParameters = Arrays.asList("newNamesPrefix", "assumeRuntimeVersion", "changeLogFileIn", "looseChangeLogFileIn", "changeLogFileOut", "obfuscateReferencesPackage", "autoReflectionPackage", "autoReflectionHash", "collapsePackagesWithDefault", "newPackageNameFile", "newClassNameFile", "newFieldNameFile", "newMethodNameFile", "methodParameterChangesPackage");
 
     public String mapToString(HashMap<String, String> map) throws JsonProcessingException {
         StringBuilder builder = new StringBuilder();
@@ -156,7 +156,7 @@ public class ZkmGenerator {
 
     public String generateConfig() throws JsonProcessingException {
         StringBuilder config = new StringBuilder();
-        for (String c : this.config.getClassPathExclude()){
+        for (String c : this.config.getClassPathExclude()) {
             classPaths.removeIf(s -> s.contains(c));
         }
         config.append("classpath ").append(arrayToString(classPaths)).append(";\n");
@@ -251,8 +251,8 @@ public class ZkmGenerator {
         for (String s : this.config.getMethodParameterObfuscationExclude()) {
             config.append("methodParameterObfuscationExclude ").append(s).append(";\n");
         }
-        for (int i = 0;i < this.config.getIterations();i++) {
-            if (i>=1){
+        for (int i = 0; i < this.config.getIterations(); i++) {
+            if (i >= 1) {
                 this.config.setAutoReflectionHandling("none");
             }
             config.append("obfuscate ").append(mapToString(obfuscationMap)).append(";\n");
